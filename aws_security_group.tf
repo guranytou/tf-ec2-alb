@@ -1,5 +1,9 @@
-resource "aws_security_group" "example_ec2" {
-  name   = "example_ec2"
+################################################################################
+# Security group - HTTP allow
+################################################################################
+
+resource "aws_security_group" "example_http" {
+  name   = "example_http"
   vpc_id = aws_vpc.example.id
 
   ingress {
