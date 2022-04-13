@@ -5,7 +5,7 @@
 resource "aws_instance" "example" {
   ami                    = "ami-0992fc94ca0f1415a"
   instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.example_http.id]
+  vpc_security_group_ids = [aws_security_group.example_instance.id]
   subnet_id              = aws_subnet.example_private_1a.id
 
   user_data = file("install_apache.sh")
@@ -16,34 +16,34 @@ resource "aws_instance" "example" {
 }
 
 ################################################################################
-# Security group - HTTP allow
+# Security group - ALB allow
 ################################################################################
 
-resource "aws_security_group" "example_http" {
-  name   = "example_http"
+resource "aws_security_group" "example_instance" {
+  name   = "example_instance"
   vpc_id = aws_vpc.example.id
 
   tags = {
-    Name = "example"
+    Name = "example_instance"
   }
 }
 
-resource "aws_security_group_rule" "sg_ingress" {
+resource "aws_security_group_rule" "sg_ingress_instance" {
   type                     = "ingress"
   from_port                = 80
   to_port                  = 80
   protocol                 = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
-  security_group_id        = aws_security_group.example_http.id
+  source_security_group_id = aws_security_group.example_http.id
+  security_group_id        = aws_security_group.example_instance.id
 }
 
-resource "aws_security_group_rule" "sg_egress" {
-  type                     = "egress"
-  from_port                = 0
-  to_port                  = 0
-  protocol                 = "-1"
-  cidr_blocks = ["0.0.0.0/0"]
-  security_group_id        = aws_security_group.example_http.id
+resource "aws_security_group_rule" "sg_egress_instance" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.example_instance.id
 }
 
 
@@ -111,4 +111,35 @@ resource "aws_lb_target_group_attachment" "example" {
   target_group_arn = aws_lb_target_group.example.arn
   target_id        = aws_instance.example.id
   port             = 80
+}
+
+################################################################################
+# Security group - HTTP allow
+################################################################################
+
+resource "aws_security_group" "example_http" {
+  name   = "example_http"
+  vpc_id = aws_vpc.example.id
+
+  tags = {
+    Name = "example_http"
+  }
+}
+
+resource "aws_security_group_rule" "sg_ingress" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["54.65.187.254/32"]
+  security_group_id = aws_security_group.example_http.id
+}
+
+resource "aws_security_group_rule" "sg_egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.example_http.id
 }
