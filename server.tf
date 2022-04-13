@@ -5,7 +5,7 @@
 resource "aws_instance" "example" {
   ami                    = "ami-0992fc94ca0f1415a"
   instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.example_instance.id]
+  vpc_security_group_ids = [aws_security_group.example_for_instance.id]
   subnet_id              = aws_subnet.example_private_1a.id
 
   user_data = file("install_apache.sh")
@@ -19,12 +19,12 @@ resource "aws_instance" "example" {
 # Security group - ALB allow
 ################################################################################
 
-resource "aws_security_group" "example_instance" {
+resource "aws_security_group" "example_for_instance" {
   name   = "example_instance"
   vpc_id = aws_vpc.example.id
 
   tags = {
-    Name = "example_instance"
+    Name = "example_for_instance"
   }
 }
 
@@ -33,8 +33,8 @@ resource "aws_security_group_rule" "sg_ingress_instance" {
   from_port                = 80
   to_port                  = 80
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.example_http.id
-  security_group_id        = aws_security_group.example_instance.id
+  source_security_group_id = aws_security_group.example_for_alb.id
+  security_group_id        = aws_security_group.example_for_instance.id
 }
 
 resource "aws_security_group_rule" "sg_egress_instance" {
@@ -43,7 +43,7 @@ resource "aws_security_group_rule" "sg_egress_instance" {
   to_port           = 0
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.example_instance.id
+  security_group_id = aws_security_group.example_for_instance.id
 }
 
 
@@ -58,7 +58,7 @@ resource "aws_lb" "example" {
   internal                         = false
   idle_timeout                     = 60
   enable_cross_zone_load_balancing = false
-  security_groups                  = [aws_security_group.example_http.id]
+  security_groups                  = [aws_security_group.example_for_alb.id]
   subnets = [
     aws_subnet.example_public_1a.id,
     aws_subnet.example_public_1c.id
@@ -117,12 +117,12 @@ resource "aws_lb_target_group_attachment" "example" {
 # Security group - HTTP allow
 ################################################################################
 
-resource "aws_security_group" "example_http" {
+resource "aws_security_group" "example_for_alb" {
   name   = "example_http"
   vpc_id = aws_vpc.example.id
 
   tags = {
-    Name = "example_http"
+    Name = "example_for_alb"
   }
 }
 
@@ -132,7 +132,7 @@ resource "aws_security_group_rule" "sg_ingress" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["54.65.187.254/32"]
-  security_group_id = aws_security_group.example_http.id
+  security_group_id = aws_security_group.example_for_alb.id
 }
 
 resource "aws_security_group_rule" "sg_egress" {
@@ -141,5 +141,5 @@ resource "aws_security_group_rule" "sg_egress" {
   to_port           = 0
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.example_http.id
+  security_group_id = aws_security_group.example_for_alb.id
 }

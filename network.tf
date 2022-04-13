@@ -59,11 +59,11 @@ resource "aws_subnet" "example_private_1a" {
 # Internet Gateway
 ################################################################################
 
-resource "aws_internet_gateway" "example_1" {
+resource "aws_internet_gateway" "example" {
   vpc_id = aws_vpc.example.id
 
   tags = {
-    "Name" = "example_1"
+    "Name" = "example"
   }
 }
 
@@ -71,13 +71,13 @@ resource "aws_internet_gateway" "example_1" {
 # NAT Gateway
 ################################################################################
 
-resource "aws_nat_gateway" "example_1" {
+resource "aws_nat_gateway" "example" {
   allocation_id = aws_eip.nat_gw.id
   subnet_id     = aws_subnet.example_public_1a.id
-  depends_on    = [aws_internet_gateway.example_1]
+  depends_on    = [aws_internet_gateway.example]
 
   tags = {
-    "Name" = "example_1"
+    "Name" = "example"
   }
 }
 
@@ -105,7 +105,7 @@ resource "aws_route_table" "example_internet_gw" {
 resource "aws_route" "example_internet_gw_default" {
   route_table_id         = aws_route_table.example_internet_gw.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.example_1.id
+  gateway_id             = aws_internet_gateway.example.id
 }
 
 resource "aws_route_table_association" "example_internet_gw_1a" {
@@ -133,7 +133,7 @@ resource "aws_route_table" "example_private" {
 resource "aws_route" "example_private_default" {
   route_table_id         = aws_route_table.example_private.id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.example_1.id
+  nat_gateway_id         = aws_nat_gateway.example.id
 }
 
 resource "aws_route_table_association" "example_private_1" {

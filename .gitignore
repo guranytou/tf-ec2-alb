@@ -1,5 +1,4 @@
-*.tfstate.*
-*.tfstate
+*.tfstate*
 *.tfvars
 .terraform*
-.env
+!.terraform-version
