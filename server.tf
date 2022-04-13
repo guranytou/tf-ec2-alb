@@ -125,7 +125,7 @@ resource "aws_security_group_rule" "sg_ingress" {
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  cidr_blocks       = ["54.65.187.254/32"]
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.example_for_alb.id
 }
 
