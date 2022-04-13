@@ -3,13 +3,10 @@
 ################################################################################
 
 resource "aws_vpc" "example" {
-  cidr_block           = "10.100.0.0/16"
-  instance_tenancy     = "default"
-  enable_dns_support   = "true"
-  enable_dns_hostnames = "true"
+  cidr_block = "10.100.0.0/16"
 
   tags = {
-    "Name" = "example"
+    Name = "example"
   }
 }
 
@@ -18,24 +15,22 @@ resource "aws_vpc" "example" {
 ################################################################################
 
 resource "aws_subnet" "example_public_1a" {
-  vpc_id                  = aws_vpc.example.id
-  cidr_block              = "10.100.0.0/24"
-  availability_zone       = "ap-northeast-1a"
-  map_public_ip_on_launch = true
+  vpc_id            = aws_vpc.example.id
+  cidr_block        = "10.100.0.0/24"
+  availability_zone = "ap-northeast-1a"
 
   tags = {
-    "Name" = "example_public_1a"
+    Name = "example_public_1a"
   }
 }
 
 resource "aws_subnet" "example_public_1c" {
-  vpc_id                  = aws_vpc.example.id
-  cidr_block              = "10.100.1.0/24"
-  availability_zone       = "ap-northeast-1c"
-  map_public_ip_on_launch = true
+  vpc_id            = aws_vpc.example.id
+  cidr_block        = "10.100.1.0/24"
+  availability_zone = "ap-northeast-1c"
 
   tags = {
-    "Name" = "example_public_1c"
+    Name = "example_public_1c"
   }
 }
 
@@ -50,7 +45,7 @@ resource "aws_subnet" "example_private_1a" {
   map_public_ip_on_launch = false
 
   tags = {
-    "Name" = "example_private_1"
+    Name = "example_private_1"
   }
 }
 
@@ -63,7 +58,7 @@ resource "aws_internet_gateway" "example" {
   vpc_id = aws_vpc.example.id
 
   tags = {
-    "Name" = "example"
+    Name = "example"
   }
 }
 
@@ -77,7 +72,7 @@ resource "aws_nat_gateway" "example" {
   depends_on    = [aws_internet_gateway.example]
 
   tags = {
-    "Name" = "example"
+    Name = "example"
   }
 }
 
@@ -98,7 +93,7 @@ resource "aws_route_table" "example_internet_gw" {
   vpc_id = aws_vpc.example.id
 
   tags = {
-    "Name" = "example_route_internet_gw"
+    Name = "example_route_internet_gw"
   }
 }
 
@@ -126,7 +121,7 @@ resource "aws_route_table" "example_private" {
   vpc_id = aws_vpc.example.id
 
   tags = {
-    "Name" = "example_route_private"
+    Name = "example_route_private"
   }
 }
 
